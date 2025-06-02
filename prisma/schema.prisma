@@ -1,0 +1,26 @@
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  courses   Enrollment[]
+}
+
+model Course {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  enrollments Enrollment[]
+  createdAt   DateTime      @default(now())
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}
