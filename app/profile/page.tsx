@@ -1,130 +1,279 @@
-'use client';
-import React from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Sidebar } from "@/components/custom/Sidebar";
+// pages/profile.tsx
+"use client";
+import { useEffect, useState } from "react";
+import { FaGraduationCap, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 
-export default function ProfilePage() {
+import {
+  MdDashboard,
+  MdLogout,
+  MdSettings,
+  MdAssignment,
+  MdLibraryBooks,
+} from "react-icons/md";
+import Image from "next/image";
+const countryData = [
+  { name: "India", code: "+91", flag: "IN" },
+  { name: "USA", code: "+1", flag: "US" },
+  { name: "UK", code: "+44", flag: "GB" },
+  { name: "Canada", code: "+1", flag: "CA" },
+  { name: "Australia", code: "+61", flag: "AU" },
+  { name: "Germany", code: "+49", flag: "DE" },
+  { name: "France", code: "+33", flag: "FR" },
+  { name: "Japan", code: "+81", flag: "JP" },
+  { name: "China", code: "+86", flag: "CN" },
+];
+
+export default function Profile() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    gender: "",
+    country: "",
+    language: "",
+    timeZone: "",
+    email: "",
+    mobile: "",
+  });
+
+  const handleChange = (field: string, value: string) => {
+    setProfile((prev) => {
+      if (field === "country") {
+        const country = countryData.find((c) => c.name === value);
+        return {
+          ...prev,
+          country: value,
+          mobile: country ? country.code : "",
+        };
+      }
+      return { ...prev, [field]: value };
+    });
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    setShowPopup(true);
+    setTimeout(() => {
+      setShowPopup(false);
+      window.location.reload();
+    }, 2000);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    window.location.reload();
+  };
+
+  const currentCountry = countryData.find(c => c.name === profile.country);
+
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
+    <div className="flex flex-col md:flex-row min-h-screen font-sans bg-white">
+      {/* Sidebar */}
+      <aside className="w-full md:w-48 bg-indigo-50 p-4 flex md:flex-col justify-between">
+        <div>
+          <div className="flex justify-center mb-6">
+            <FaGraduationCap size={36} className="text-indigo-500" />
+          </div>
+          <nav className="space-y-4">
+            <SidebarItem icon={<MdDashboard />} label="Dashboard" />
+            <SidebarItem icon={<MdAssignment />} label="Assignments" />
+            <SidebarItem icon={<MdLibraryBooks />} label="Courses" />
+            <SidebarItem icon={<FaEnvelope />} label="Profile" active />
+            <SidebarItem icon={<MdSettings />} label="Settings" />
+          </nav>
+        </div>
+        <SidebarItem icon={<MdLogout />} label="Logout" />
+      </aside>
 
-      <div className="flex-1 p-6 bg-white">
-        {/* Search Bar */}
-        <div className="flex justify-center mb-8">
+      {/* Main Content */}
+      <main className="flex-1 px-6 py-6">
+        {/* Popup */}
+        {showPopup && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
+            Profile saved successfully!
+          </div>
+        )}
+
+        {/* Top Bar */}
+        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
           <input
             type="text"
             placeholder="Search"
-            className="w-1/2 px-4 py-2 rounded-full shadow-md focus:outline-none"
+            className="w-full md:w-1/2 px-6 py-2 bg-gray-100 rounded-full shadow"
           />
+          <div className="flex items-center gap-2">
+            <Image
+              src="/profile.png"
+              alt=""
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <span>David</span>
+          </div>
         </div>
 
-        {/* Profile Card */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Avatar>
-                <AvatarImage src="/avatar.jpg" alt="Profile" />
-              </Avatar>
+        {/* Profile Section */}
+        <div className="bg-white rounded-xl shadow p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center space-x-4">
+              <Image
+                src="/profle1.png"
+                alt=""
+                width={60}
+                height={60}
+                className="rounded-full"
+              />
               <div>
-                <h2 className="text-lg font-semibold">David Ross</h2>
-                <p className="text-gray-500">david@gmail.com</p>
+                <h2 className="text-xl font-semibold">{profile.firstName} {profile.lastName}</h2>
+                <p className="text-gray-500 text-sm">{profile.email}</p>
               </div>
             </div>
-            <Button>Edit</Button>
+            <div className="space-x-2">
+              {isEditing ? (
+                <>
+                  <button
+                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    onClick={handleSave}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="bg-red-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6 mt-6">
+          {/* Editable Form */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InputField label="First Name" value={profile.firstName} onChange={(val) => handleChange("firstName", val)} disabled={!isEditing} />
+            <InputField label="Last Name" value={profile.lastName} onChange={(val) => handleChange("lastName", val)} disabled={!isEditing} />
+            <SelectField label="Gender" options={["Male", "Female", "Other"]} value={profile.gender} onChange={(val) => handleChange("gender", val)} disabled={!isEditing} />
+            <SelectField label="Language" options={["English", "Hindi","German","French", "Japanese", ]} value={profile.language} onChange={(val) => handleChange("language", val)} disabled={!isEditing} />
+            <SelectField label="Time Zone" options={["UTC+05:30", "UTC+00:00"]} value={profile.timeZone} onChange={(val) => handleChange("timeZone", val)} disabled={!isEditing} />
+            {/* Country with flags */}
             <div>
-              <label className="block mb-1">First Name</label>
-              <Input placeholder="Your First Name" />
-            </div>
-            <div>
-              <label className="block mb-1">Last Name</label>
-              <Input placeholder="Your Last Name" />
-            </div>
-            <div>
-              <label className="block mb-1">Gender</label>
-              <Select>
-                <SelectTrigger>Gender</SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block mb-1">Country</label>
-              <Select>
-                <SelectTrigger>Country</SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="india">India</SelectItem>
-                  <SelectItem value="usa">USA</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block mb-1">Language</label>
-              <Select>
-                <SelectTrigger>Language</SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="english">English</SelectItem>
-                  <SelectItem value="hindi">Hindi</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block mb-1">Time Zone</label>
-              <Select>
-                <SelectTrigger>Time (EX:UTC+05:30)</SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="utc530">UTC+05:30</SelectItem>
-                  <SelectItem value="utc0">UTC+00:00</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-medium">Country</label>
+              <select
+                value={profile.country}
+                onChange={(e) => handleChange("country", e.target.value)}
+                disabled={!isEditing}
+                className="w-full mt-1 px-4 py-2 bg-gray-100 rounded disabled:opacity-70"
+              >
+                {countryData.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
           {/* Email and Mobile */}
-          <div className="grid grid-cols-2 gap-6 mt-10">
+          <div className="grid md:grid-cols-2 gap-6 mt-8">
             <div>
-              <h3 className="font-semibold mb-2">Email Address</h3>
-              <div className="flex items-center gap-4">
-                <div className="bg-blue-100 p-2 rounded-full">
-                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 13.065l8.338-6.24A1 1 0 0019.88 5H4.12a1 1 0 00-.457 1.825l8.337 6.24z" />
-                    <path d="M20 8.935l-8 6-8-6V18a1 1 0 001 1h14a1 1 0 001-1V8.935z" />
-                  </svg>
-                </div>
-                <div>
-                  <p>david@gmail.com</p>
-                  <p className="text-sm text-gray-500">1 month ago</p>
-                </div>
-              </div>
-              <Button variant="outline" className="mt-2">+Add Email Address</Button>
+              <label className="text-sm font-medium">Email Address</label>
+              <input
+                type="email"
+                value={profile.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                disabled={!isEditing}
+                className="w-full mt-1 px-4 py-2 bg-gray-100 rounded disabled:opacity-70"
+              />
+              {isEditing && <button className="mt-2 text-sm text-indigo-600 hover:underline">+ Add Email</button>}
             </div>
-
             <div>
-              <h3 className="font-semibold mb-2">Mobile</h3>
-              <div className="flex items-center gap-4">
-                <div className="bg-purple-100 p-2 rounded-full">
-                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.76 3.9.76a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.37.26 2.69.76 3.9a1 1 0 01-.21 1.11l-2.2 2.2z" />
-                  </svg>
-                </div>
-                <div>
-                  <p>+918749283821</p>
-                  <p className="text-sm text-gray-500">1 month ago</p>
-                </div>
-              </div>
-              <Button variant="outline" className="mt-2">+Add Mobile</Button>
+              <label className="text-sm font-medium">Mobile</label>
+              <div>
+                <div className="flex mt-1">
+                 <div className="w-1/3 flex items-center justify-center bg-gray-200 rounded-l px-2">
+                {currentCountry?.flag && (
+        <span className={`fi fi-${currentCountry.flag.toLowerCase()} w-6 h-4 mr-1 rounded-sm`} />
+      )}
+      <span>{currentCountry?.code}</span>
+    </div>
+    <input
+      className="w-2/3 px-4 py-2 bg-gray-100 rounded-r"
+      value={profile.mobile.replace(currentCountry?.code || "", "")}
+      onChange={(e) => {
+        const digitsOnly = e.target.value.replace(/\D/g, "");
+        const fullNumber = `${currentCountry?.code || ""}${digitsOnly}`;
+        if (/^\+\d{0,15}$/.test(fullNumber)) {
+          handleChange("mobile", fullNumber);
+        }
+      }}
+      disabled={!isEditing}
+    />
+  </div>
+  {isEditing && <button className="mt-2 text-sm text-indigo-600 hover:underline">+ Add Mobile</button>}
+</div>
             </div>
           </div>
-        </Card>
-      </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function SidebarItem({ icon, label, active = false }: { icon: JSX.Element; label: string; active?: boolean }) {
+  return (
+    <div
+      className={`flex items-center gap-2 px-3 py-2 rounded cursor-pointer ${
+        active ? "bg-indigo-100 text-indigo-600 font-semibold" : "text-gray-700 hover:bg-gray-200"
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function InputField({ label, value, onChange, disabled }: { label: string; value: string; onChange: (val: string) => void; disabled: boolean }) {
+  return (
+    <div>
+      <label className="text-sm font-medium">{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className="w-full mt-1 px-4 py-2 bg-gray-100 rounded disabled:opacity-70"
+      />
+    </div>
+  );
+}
+
+function SelectField({ label, value, options, onChange, disabled }: { label: string; value: string; options: string[]; onChange: (val: string) => void; disabled: boolean }) {
+  return (
+    <div>
+      <label className="text-sm font-medium">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        className="w-full mt-1 px-4 py-2 bg-gray-100 rounded disabled:opacity-70"
+      >
+        <option>{label}</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
