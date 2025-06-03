@@ -60,7 +60,7 @@ export default function AssignmentsPage() {
               />
               <div>
                 <p className="font-semibold">David</p>
-                <p className="text-sm text-gray-500">david@gmail.com</p>
+                <p className="text-sm text-blue-500">david@gmail.com</p>
               </div>
             </div>
           </div>

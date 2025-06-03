@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,66 @@ export default function ForgotPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; confirm?: string }>({});
+  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean; confirm?: boolean }>({});
+
+  // Email validation pattern
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  useEffect(() => {
+    const newErrors: typeof errors = {};
+
+    if (touched.email) {
+      if (!email.trim()) {
+        newErrors.email = "Email is required";
+      } else if (!emailRegex.test(email)) {
+        newErrors.email = "Enter a valid email";
+      }
+    }
+
+    if (touched.password) {
+      if (!newPassword) {
+        newErrors.password = "New password is required";
+      } else if (newPassword.length < 6) {
+        newErrors.password = "Password must be at least 6 characters";
+      }
+    }
+
+    if (touched.confirm) {
+      if (!confirmPassword) {
+        newErrors.confirm = "Please confirm your password";
+      } else if (newPassword !== confirmPassword) {
+        newErrors.confirm = "Passwords do not match";
+      }
+    }
+
+    setErrors(newErrors);
+  }, [email, newPassword, confirmPassword, touched]);
+
+  const handleSubmit = async () => {
+    setTouched({ email: true, password: true, confirm: true });
+
+    if (Object.keys(errors).length === 0) {
+      try {
+        // 🔒 Replace this with your actual API call
+        const response = await fetch("/api/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password: newPassword }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert("Password reset successfully!");
+        } else {
+          alert(data.message || "Something went wrong!");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to reset password.");
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -24,12 +84,16 @@ export default function ForgotPasswordPage() {
           </p>
 
           {/* Email */}
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <div>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
+            />
+            {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+          </div>
 
           {/* New Password */}
           <div className="relative">
@@ -38,6 +102,7 @@ export default function ForgotPasswordPage() {
               placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
               className="pr-10"
             />
             <button
@@ -47,6 +112,7 @@ export default function ForgotPasswordPage() {
             >
               {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
+            {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
           </div>
 
           {/* Confirm Password */}
@@ -56,6 +122,7 @@ export default function ForgotPasswordPage() {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, confirm: true }))}
               className="pr-10"
             />
             <button
@@ -65,10 +132,14 @@ export default function ForgotPasswordPage() {
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
+            {errors.confirm && <p className="text-sm text-red-500 mt-1">{errors.confirm}</p>}
           </div>
 
           {/* Submit */}
-          <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+          <Button
+            onClick={handleSubmit}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+          >
             Reset Password
           </Button>
 
