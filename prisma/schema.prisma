@@ -1,34 +1,33 @@
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  courses   CourseEnrollment[]
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Course {
-  id        String   @id @default(uuid())
-  title     String
+  id          String   @id @default(uuid())
+  title       String
   description String
-  thumbnail  String
-  videoUrl   String
-  category   String
-  chapters   Chapter[]
-  createdAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  modules     Module[]
 }
 
-model Chapter {
+model Module {
   id        String   @id @default(uuid())
   title     String
-  videoUrl  String
-  course    Course   @relation(fields: [courseId], references: [id])
   courseId  String
-  order     Int
+  course    Course   @relation(fields: [courseId], references: [id])
+  lessons   Lesson[]
 }
 
-model CourseEnrollment {
+model Lesson {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
-  course    Course   @relation(fields: [courseId], references: [id])
-  userId    String
-  courseId  String
-  progress  Int      @default(0)
+  title     String
+  moduleId  String
+  module    Module   @relation(fields: [moduleId], references: [id])
 }

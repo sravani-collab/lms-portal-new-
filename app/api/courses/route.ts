@@ -1,15 +1,18 @@
-import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
-// Get all courses
+const prisma = new PrismaClient();
+
 export async function GET() {
-  const courses = await prisma.course.findMany();
-  return NextResponse.json(courses);
-}
+  const courses = await prisma.course.findMany({
+    include: {
+      modules: {
+        include: {
+          lessons: true,
+        },
+      },
+    },
+  });
 
-// Create a course
-export async function POST(req: Request) {
-  const body = await req.json();
-  const course = await prisma.course.create({ data: body });
-  return NextResponse.json(course);
+  return NextResponse.json(courses);
 }

@@ -1,8 +1,6 @@
-// pages/profile.tsx
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaGraduationCap, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
-
 import {
   MdDashboard,
   MdLogout,
@@ -11,6 +9,7 @@ import {
   MdLibraryBooks,
 } from "react-icons/md";
 import Image from "next/image";
+
 const countryData = [
   { name: "India", code: "+91", flag: "IN" },
   { name: "USA", code: "+1", flag: "US" },
@@ -81,14 +80,14 @@ export default function Profile() {
             <SidebarItem icon={<MdAssignment />} label="Assignments" />
             <SidebarItem icon={<MdLibraryBooks />} label="Courses" />
             <SidebarItem icon={<FaEnvelope />} label="Profile" active />
-            <SidebarItem icon={<MdSettings />} label="Settings" />
+
           </nav>
         </div>
         <SidebarItem icon={<MdLogout />} label="Logout" />
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 px-6 py-6">
+      <main className="flex-1 px-4 sm:px-6 py-6 w-full max-w-7xl mx-auto">
         {/* Popup */}
         {showPopup && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">
@@ -97,11 +96,11 @@ export default function Profile() {
         )}
 
         {/* Top Bar */}
-        <div className="flex justify-between items-center mb-4 flex-wrap gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <input
             type="text"
             placeholder="Search"
-            className="w-full md:w-1/2 px-6 py-2 bg-gray-100 rounded-full shadow"
+            className="w-full sm:w-1/2 px-6 py-2 bg-gray-100 rounded-full shadow"
           />
           <div className="flex items-center gap-2">
             <Image
@@ -117,7 +116,7 @@ export default function Profile() {
 
         {/* Profile Section */}
         <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <div className="flex items-center space-x-4">
               <Image
                 src="/profle1.png"
@@ -127,7 +126,9 @@ export default function Profile() {
                 className="rounded-full"
               />
               <div>
-                <h2 className="text-xl font-semibold">{profile.firstName} {profile.lastName}</h2>
+                <h2 className="text-xl font-semibold">
+                  {profile.firstName} {profile.lastName}
+                </h2>
                 <p className="text-gray-500 text-sm">{profile.email}</p>
               </div>
             </div>
@@ -159,13 +160,12 @@ export default function Profile() {
           </div>
 
           {/* Editable Form */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <InputField label="First Name" value={profile.firstName} onChange={(val) => handleChange("firstName", val)} disabled={!isEditing} />
             <InputField label="Last Name" value={profile.lastName} onChange={(val) => handleChange("lastName", val)} disabled={!isEditing} />
             <SelectField label="Gender" options={["Male", "Female", "Other"]} value={profile.gender} onChange={(val) => handleChange("gender", val)} disabled={!isEditing} />
-            <SelectField label="Language" options={["English", "Hindi","German","French", "Japanese", ]} value={profile.language} onChange={(val) => handleChange("language", val)} disabled={!isEditing} />
+            <SelectField label="Language" options={["English", "Hindi", "German", "French", "Japanese"]} value={profile.language} onChange={(val) => handleChange("language", val)} disabled={!isEditing} />
             <SelectField label="Time Zone" options={["UTC+05:30", "UTC+00:00"]} value={profile.timeZone} onChange={(val) => handleChange("timeZone", val)} disabled={!isEditing} />
-            {/* Country with flags */}
             <div>
               <label className="text-sm font-medium">Country</label>
               <select
@@ -184,7 +184,7 @@ export default function Profile() {
           </div>
 
           {/* Email and Mobile */}
-          <div className="grid md:grid-cols-2 gap-6 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-8">
             <div>
               <label className="text-sm font-medium">Email Address</label>
               <input
@@ -198,29 +198,27 @@ export default function Profile() {
             </div>
             <div>
               <label className="text-sm font-medium">Mobile</label>
-              <div>
-                <div className="flex mt-1">
-                 <div className="w-1/3 flex items-center justify-center bg-gray-200 rounded-l px-2">
-                {currentCountry?.flag && (
-        <span className={`fi fi-${currentCountry.flag.toLowerCase()} w-6 h-4 mr-1 rounded-sm`} />
-      )}
-      <span>{currentCountry?.code}</span>
-    </div>
-    <input
-      className="w-2/3 px-4 py-2 bg-gray-100 rounded-r"
-      value={profile.mobile.replace(currentCountry?.code || "", "")}
-      onChange={(e) => {
-        const digitsOnly = e.target.value.replace(/\D/g, "");
-        const fullNumber = `${currentCountry?.code || ""}${digitsOnly}`;
-        if (/^\+\d{0,15}$/.test(fullNumber)) {
-          handleChange("mobile", fullNumber);
-        }
-      }}
-      disabled={!isEditing}
-    />
-  </div>
-  {isEditing && <button className="mt-2 text-sm text-indigo-600 hover:underline">+ Add Mobile</button>}
-</div>
+              <div className="flex flex-col sm:flex-row mt-1">
+                <div className="sm:w-1/3 flex items-center justify-center bg-gray-200 px-2 py-2 rounded-t sm:rounded-l sm:rounded-tr-none">
+                  {currentCountry?.flag && (
+                    <span className={`fi fi-${currentCountry.flag.toLowerCase()} w-6 h-4 mr-1 rounded-sm`} />
+                  )}
+                  <span>{currentCountry?.code}</span>
+                </div>
+                <input
+                  className="sm:w-2/3 w-full px-4 py-2 bg-gray-100 rounded-b sm:rounded-r sm:rounded-bl-none"
+                  value={profile.mobile.replace(currentCountry?.code || "", "")}
+                  onChange={(e) => {
+                    const digitsOnly = e.target.value.replace(/\D/g, "");
+                    const fullNumber = `${currentCountry?.code || ""}${digitsOnly}`;
+                    if (/^\+\d{0,15}$/.test(fullNumber)) {
+                      handleChange("mobile", fullNumber);
+                    }
+                  }}
+                  disabled={!isEditing}
+                />
+              </div>
+              {isEditing && <button className="mt-2 text-sm text-indigo-600 hover:underline">+ Add Mobile</button>}
             </div>
           </div>
         </div>
