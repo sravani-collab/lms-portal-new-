@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import {
   FaGraduationCap,
@@ -11,10 +12,18 @@ import {
   MdLibraryBooks,
 } from 'react-icons/md';
 
+type Course = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  modules?: any[];
+};
+
 export default function CoursesPage() {
   const [selectedTab, setSelectedTab] = useState<'enrolled' | 'explore'>('enrolled');
-  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
-  const [exploreCourses, setExploreCourses] = useState<string[]>([]);
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [exploreCourses, setExploreCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +33,7 @@ export default function CoursesPage() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('/api/courses'); // Adjust this API path as needed
+        const response = await fetch('/api/courses');
         if (!response.ok) throw new Error('Failed to fetch courses');
 
         const data = await response.json();
@@ -32,7 +41,7 @@ export default function CoursesPage() {
         setEnrolledCourses(data.enrolledCourses || []);
         setExploreCourses(data.exploreCourses || []);
       } catch (err: any) {
-        setError(err.message);
+        setError(err.message || 'Unknown error');
       } finally {
         setLoading(false);
       }
@@ -115,26 +124,27 @@ export default function CoursesPage() {
           <p>Loading courses...</p>
         ) : error ? (
           <p className="text-red-600">Error: {error}</p>
+        ) : (selectedTab === 'enrolled' ? enrolledCourses : exploreCourses).length === 0 ? (
+          <p>No courses found.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {(selectedTab === 'enrolled' ? enrolledCourses : exploreCourses).map(
-              (course, index) => (
-                <div
-                  key={index}
-                  className="bg-purple-200 rounded-2xl p-6 shadow-md hover:shadow-lg transition duration-200"
-                >
-                  <h3 className="text-md font-semibold text-gray-700 mb-2">
-                    {course}
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <button className="px-4 py-2 bg-purple-500 text-white rounded-full text-sm">
-                      View
-                    </button>
-                    <div className="w-8 h-8 bg-purple-300 rounded-full shadow-inner" />
-                  </div>
+            {(selectedTab === 'enrolled' ? enrolledCourses : exploreCourses).map((course) => (
+              <div
+                key={course.id}
+                className="bg-purple-200 rounded-2xl p-6 shadow-md hover:shadow-lg transition duration-200"
+              >
+                <h3 className="text-md font-semibold text-gray-700 mb-2">
+                  {course.title}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">{course.description}</p>
+                <div className="flex justify-between items-center">
+                  <button className="px-4 py-2 bg-purple-500 text-white rounded-full text-sm">
+                    View
+                  </button>
+                  <div className="w-8 h-8 bg-purple-300 rounded-full shadow-inner" />
                 </div>
-              )
-            )}
+              </div>
+            ))}
           </div>
         )}
       </main>
