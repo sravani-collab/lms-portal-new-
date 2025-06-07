@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import {
   GraduationCap,
@@ -71,6 +70,7 @@ const mockExploreCourses: Course[] = [
     createdAt: '2024-02-10'
   }
 ];
+import Layout from '@/components/layout';
 
 export default function CoursesPage() {
   const [selectedTab, setSelectedTab] = useState<'enrolled' | 'explore'>('enrolled');
@@ -274,6 +274,8 @@ function SidebarItem({
   );
 }
 
+import Link from 'next/link';
+
 function CourseCard({ course, isEnrolled }: { course: Course; isEnrolled: boolean }) {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group">
@@ -281,9 +283,6 @@ function CourseCard({ course, isEnrolled }: { course: Course; isEnrolled: boolea
         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">
           {course.title}
         </h3>
-        <div className="flex items-center space-x-2">
-          {isEnrolled ? <PieChart className="text-purple-500" size={16} /> : <BarChart3 className="text-indigo-500" size={16} />}
-        </div>
       </div>
 
       <p className="text-gray-600 text-sm mb-6 leading-relaxed">
@@ -306,13 +305,15 @@ function CourseCard({ course, isEnrolled }: { course: Course; isEnrolled: boolea
       )}
 
       <div className="flex items-center justify-between">
-        <button className={`w-full sm:w-auto px-6 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-          isEnrolled 
-            ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:shadow-lg transform hover:-translate-y-0.5'
-            : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg transform hover:-translate-y-0.5'
-        }`}>
-          {isEnrolled ? 'Continue' : 'Enroll Now'}
-        </button>
+        <Link href={`/coursedetail/${course.id}`}>
+          <button className={`w-full sm:w-auto px-6 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+            isEnrolled 
+              ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:shadow-lg transform hover:-translate-y-0.5'
+              : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg transform hover:-translate-y-0.5'
+          }`}>
+            {isEnrolled ? 'Continue' : 'Enroll Now'}
+          </button>
+        </Link>
         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
           isEnrolled ? 'bg-purple-100' : 'bg-indigo-100'
         }`}>
@@ -324,3 +325,4 @@ function CourseCard({ course, isEnrolled }: { course: Course; isEnrolled: boolea
     </div>
   );
 }
+
