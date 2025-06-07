@@ -1,155 +1,197 @@
-"use client";
-
+"use client"
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+export default function ResetPasswordPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirm?: string }>({});
-  const [touched, setTouched] = useState<{ email?: boolean; password?: boolean; confirm?: boolean }>({});
+  const [formData, setFormData] = useState({ 
+    email: "", 
+    newPassword: "", 
+    confirmPassword: "" 
+  });
+  const [errors, setErrors] = useState({ 
+    email: "", 
+    newPassword: "", 
+    confirmPassword: "" 
+  });
+  const [touched, setTouched] = useState({ 
+    email: false, 
+    newPassword: false, 
+    confirmPassword: false 
+  });
 
-  // Email validation pattern
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   useEffect(() => {
-    const newErrors: typeof errors = {};
+    const validationErrors = { email: "", newPassword: "", confirmPassword: "" };
 
     if (touched.email) {
-      if (!email.trim()) {
-        newErrors.email = "Email is required";
-      } else if (!emailRegex.test(email)) {
-        newErrors.email = "Enter a valid email";
+      if (!formData.email.trim()) {
+        validationErrors.email = "Email is required";
+      } else if (!emailRegex.test(formData.email)) {
+        validationErrors.email = "Enter a valid email";
       }
     }
 
-    if (touched.password) {
-      if (!newPassword) {
-        newErrors.password = "New password is required";
-      } else if (newPassword.length < 6) {
-        newErrors.password = "Password must be at least 6 characters";
+    if (touched.newPassword) {
+      if (!formData.newPassword.trim()) {
+        validationErrors.newPassword = "New password is required";
+      } else if (formData.newPassword.length < 6) {
+        validationErrors.newPassword = "Minimum 6 characters";
       }
     }
 
-    if (touched.confirm) {
-      if (!confirmPassword) {
-        newErrors.confirm = "Please confirm your password";
-      } else if (newPassword !== confirmPassword) {
-        newErrors.confirm = "Passwords do not match";
+    if (touched.confirmPassword) {
+      if (!formData.confirmPassword.trim()) {
+        validationErrors.confirmPassword = "Please confirm your password";
+      } else if (formData.newPassword !== formData.confirmPassword) {
+        validationErrors.confirmPassword = "Passwords do not match";
       }
     }
 
-    setErrors(newErrors);
-  }, [email, newPassword, confirmPassword, touched]);
+    setErrors(validationErrors);
+  }, [formData, touched]);
 
-  const handleSubmit = async () => {
-    setTouched({ email: true, password: true, confirm: true });
+  const handleResetPassword = async () => {
+    setTouched({ email: true, newPassword: true, confirmPassword: true });
 
-    if (Object.keys(errors).length === 0) {
+    if (!errors.email && !errors.newPassword && !errors.confirmPassword && 
+        formData.email && formData.newPassword && formData.confirmPassword) {
       try {
-        // 🔒 Replace this with your actual API call
-        const response = await fetch("/api/reset-password", {
+        const res = await fetch("/api/reset-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password: newPassword }),
+          body: JSON.stringify({
+            email: formData.email,
+            newPassword: formData.newPassword,
+          }),
         });
 
-        const data = await response.json();
-        if (response.ok) {
-          alert("Password reset successfully!");
+        const data = await res.json();
+        if (res.ok) {
+          alert("Password reset successfully");
+          // Redirect to login page
+          window.location.href = "/login";
         } else {
-          alert(data.message || "Something went wrong!");
+          alert(data.message || "Password reset failed");
         }
       } catch (err) {
         console.error(err);
-        alert("Failed to reset password.");
+        alert("Something went wrong");
       }
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleResetPassword();
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center">Reset Password</h2>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-gray-600 text-center">
-            Enter your email and new password
-          </p>
-
-          {/* Email */}
-          <div>
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-            />
-            {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+      <Card className="w-full max-w-md shadow-lg border-0 bg-white">
+        <CardContent className="p-8 space-y-6">
+          {/* Header */}
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">Reset Password</h1>
           </div>
 
-          {/* New Password */}
-          <div className="relative">
-            <Input
-              type={showNewPassword ? "text" : "password"}
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
-              className="pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-            >
-              {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-            {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
+          {/* Form */}
+          <div className="space-y-4">
+            {/* Email Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                E-mail
+              </label>
+              <Input
+                type="email"
+                placeholder="David@gmail.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
+                onKeyPress={handleKeyPress}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+            </div>
+
+            {/* New Password Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                New Password
+              </label>
+              <div className="relative">
+                <Input
+                  type={showNewPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={formData.newPassword}
+                  onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                  onBlur={() => setTouched((prev) => ({ ...prev, newPassword: true }))}
+                  onKeyPress={handleKeyPress}
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowNewPassword((prev) => !prev)}
+                >
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.newPassword && <p className="text-sm text-red-500 mt-1">{errors.newPassword}</p>}
+            </div>
+
+            {/* Confirm Password Field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onBlur={() => setTouched((prev) => ({ ...prev, confirmPassword: true }))}
+                  onKeyPress={handleKeyPress}
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>}
+            </div>
+
+            {/* Reset Password Button */}
+            <div className="pt-2">
+              <Button
+                onClick={handleResetPassword}
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-2.5 rounded-md font-medium"
+              >
+                Reset Password
+              </Button>
+            </div>
+
+            {/* Back to Login Link */}
+            <div className="text-center pt-4">
+              <span className="text-sm text-gray-600">
+                Remember your password?{" "}
+                <a href="/login" className="text-blue-600 hover:underline font-medium">
+                  Back to Login
+                </a>
+              </span>
+            </div>
           </div>
-
-          {/* Confirm Password */}
-          <div className="relative">
-            <Input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              onBlur={() => setTouched((prev) => ({ ...prev, confirm: true }))}
-              className="pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-            {errors.confirm && <p className="text-sm text-red-500 mt-1">{errors.confirm}</p>}
-          </div>
-
-          {/* Submit */}
-          <Button
-            onClick={handleSubmit}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-          >
-            Reset Password
-          </Button>
-
-          {/* Footer */}
-          <p className="text-center text-sm mt-4">
-            Remember your password?
-            <Link href="/login" className="text-blue-500 hover:underline ml-1">
-              Back to Sign in
-            </Link>
-          </p>
         </CardContent>
       </Card>
     </div>
