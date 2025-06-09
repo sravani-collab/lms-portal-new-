@@ -1,5 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import SidebarItem from "@/components/SidebarItem";
+
 import {
   GraduationCap,
   User,
