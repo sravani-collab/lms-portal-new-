@@ -110,7 +110,7 @@ export default function ResetPasswordPage() {
               </label>
               <Input
                 type="email"
-                placeholder="David@gmail.com"
+                placeholder="Name@gmail.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}

@@ -1,29 +1,15 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
-model Course {
-  id      String   @id @default(cuid())
-  title   String
-  modules Module[]
-}
 
-model Module {
-  id       String   @id @default(cuid())
-  title    String
-  course   Course   @relation(fields: [courseId], references: [id])
-  courseId String
-  lessons  Lesson[]
+datasource db {
+  provider = "postgresql"
+  url      = env("postgresql://postgres:root@localhost:5432/lms-portal")
 }
-
-model Lesson {
-  id        String   @id @default(cuid())
-  title     String
-  completed Boolean  @default(false)
-  module    Module   @relation(fields: [moduleId], references: [id])
-  moduleId  String
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  password String
+  createdAt DateTime @default(now())
 }

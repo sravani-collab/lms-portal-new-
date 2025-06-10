@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useState, useEffect } from 'react';
 import { 
@@ -21,148 +22,65 @@ import {
   Star
 } from 'lucide-react';
 
-// Mock data for different courses
-const coursesData = {
-  '1': {
-    id: '1',
-    title: 'Introduction to Computer Networks',
-    description: 'Learn the fundamentals of computer networking, protocols, and architecture with hands-on exercises and real-world examples.',
-    instructor: 'Dr. Sarah Johnson',
-    duration: '8 weeks',
-    students: 1250,
-    rating: 4.8,
-    level: 'Beginner',
-    progress: 65,
-    isEnrolled: true, // Enrolled course
-  },
-  '2': {
-    id: '2',
-    title: 'Database Management Systems',
-    description: 'Comprehensive guide to database design, SQL, and database administration.',
-    instructor: 'Prof. Michael Chen',
-    duration: '10 weeks',
-    students: 890,
-    rating: 4.7,
-    level: 'Intermediate',
-    progress: 40,
-    isEnrolled: true, // Enrolled course
-  },
-  '3': {
-    id: '3',
-    title: 'Operating Systems',
-    description: 'Understanding OS concepts, processes, and system administration.',
-    instructor: 'Dr. Emily Rodriguez',
-    duration: '12 weeks',
-    students: 1100,
-    rating: 4.9,
-    level: 'Advanced',
-    progress: 85,
-    isEnrolled: true, // Enrolled course
-  },
-  '4': {
-    id: '4',
-    title: 'Machine Learning Fundamentals',
-    description: 'Introduction to ML algorithms and practical implementation with Python.',
-    instructor: 'Dr. Alex Thompson',
-    duration: '14 weeks',
-    students: 2300,
-    rating: 4.8,
-    level: 'Intermediate',
-    progress: 0,
-    isEnrolled: false, // Explore course
-  },
-  '5': {
-    id: '5',
-    title: 'Full-Stack Web Development',
-    description: 'Complete web development course covering frontend and backend technologies.',
-    instructor: 'Sarah Williams',
-    duration: '16 weeks',
-    students: 1800,
-    rating: 4.6,
-    level: 'Beginner',
-    progress: 0,
-    isEnrolled: false, // Explore course
-  },
-  '6': {
-    id: '6',
-    title: 'Data Structures & Algorithms',
-    description: 'Essential data structures and algorithms for competitive programming.',
-    instructor: 'Prof. David Kumar',
-    duration: '10 weeks',
-    students: 1500,
-    rating: 4.9,
-    level: 'Intermediate',
-    progress: 0,
-    isEnrolled: false, // Explore course
-  }
-}
-
-
-// Generate modules based on enrollment status
-const generateModules = (isEnrolled: boolean) => [
-  {
-    id: 1,
-    title: 'Module 1 Introduction',
-    isLocked: false, // Always unlocked for preview
-    lessons: [
-      { id: '1.1', title: 'Lesson 1.1 Overview', isLocked: false, duration: '15 min' },
-      { id: '1.2', title: 'Lesson 1.2 Basics', isLocked: false, duration: '20 min' },
-    ]
-  },
-  {
-    id: 2,
-    title: 'Module 2 OSI Models',
-    isLocked: !isEnrolled,
-    lessons: [
-      { id: '2.1', title: 'Understanding OSI Layers', isLocked: !isEnrolled, duration: '25 min' },
-      { id: '2.2', title: 'Practical Implementation', isLocked: !isEnrolled, duration: '30 min' },
-    ]
-  },
-  {
-    id: 3,
-    title: 'Module 3 TCP/IP',
-    isLocked: !isEnrolled,
-    lessons: [
-      { id: '3.1', title: 'TCP Protocol Deep Dive', isLocked: !isEnrolled, duration: '35 min' },
-      { id: '3.2', title: 'IP Addressing', isLocked: !isEnrolled, duration: '40 min' },
-    ]
-  },
-  {
-    id: 4,
-    title: 'Module 4 Protocols',
-    isLocked: !isEnrolled,
-    lessons: [
-      { id: '4.1', title: 'HTTP/HTTPS Protocols', isLocked: !isEnrolled, duration: '30 min' },
-      { id: '4.2', title: 'DNS and DHCP', isLocked: !isEnrolled, duration: '25 min' },
-    ]
-  }
-];
+// Mock data for course detail
+const courseData = {
+  id: '4',
+  title: 'Introduction to Computer Networks',
+  description: 'Learn the fundamentals of computer networking, protocols, and architecture with hands-on exercises and real-world examples.',
+  instructor: 'Dr. Sarah Johnson',
+  duration: '8 weeks',
+  students: 1250,
+  rating: 4.8,
+  level: 'Beginner',
+  progress: 65,
+  isEnrolled: false, // Change this to test enrolled vs unenrolled state
+  modules: [
+    {
+      id: 4,
+      title: 'Module 1 Introduction',
+      isLocked: false,
+      lessons: [
+        { id: '1.1', title: 'Lesson 1.1 Overview', isLocked: false, duration: '15 min' },
+        { id: '1.2', title: 'Lesson 1.2 Basics', isLocked: false, duration: '20 min' },
+      ]
+    },
+    {
+      id: 5,
+      title: 'Module 2 OSI Models',
+      isLocked: true,
+      lessons: [
+        { id: '2.1', title: 'Understanding OSI Layers', isLocked: true, duration: '25 min' },
+        { id: '2.2', title: 'Practical Implementation', isLocked: true, duration: '30 min' },
+      ]
+    },
+    {
+      id: 6,
+      title: 'Module 3 TCP/IP',
+      isLocked: true,
+      lessons: [
+        { id: '3.1', title: 'TCP Protocol Deep Dive', isLocked: true, duration: '35 min' },
+        { id: '3.2', title: 'IP Addressing', isLocked: true, duration: '40 min' },
+      ]
+    },
+    {
+      id: 7,
+      title: 'Module 4 Protocols',
+      isLocked: true,
+      lessons: [
+        { id: '4.1', title: 'HTTP/HTTPS Protocols', isLocked: true, duration: '30 min' },
+        { id: '4.2', title: 'DNS and DHCP', isLocked: true, duration: '25 min' },
+      ]
+    }
+  ]
+};
 
 export default function CourseDetailPage() {
   const [expandedModules, setExpandedModules] = useState<number[]>([1]);
   const [selectedLesson, setSelectedLesson] = useState('1.2');
   const [activeTab, setActiveTab] = useState<'resources' | 'notes' | 'remarks'>('resources');
-  const [course, setCourse] = useState<any>(null);
-  const [courseId, setCourseId] = useState('1'); // Default course ID
-
-  // Simulate getting course ID from URL params
-  useEffect(() => {
-    // In a real Next.js app, you'd use useRouter() or get this from params
-    // For demo, we'll cycle through different courses or set based on URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const idFromUrl = urlParams.get('id') || '1';
-    setCourseId(idFromUrl);
-    
-    const selectedCourse = coursesData[idFromUrl as keyof typeof coursesData] || coursesData['1'];
-    const courseWithModules = {
-      ...selectedCourse,
-      modules: generateModules(selectedCourse.isEnrolled)
-    };
-    setCourse(courseWithModules);
-  }, []);
+  const [course, setCourse] = useState(courseData);
 
   const toggleModule = (moduleId: number) => {
-    if (!course) return;
     setExpandedModules(prev => 
       prev.includes(moduleId) 
         ? prev.filter(id => id !== moduleId)
@@ -171,22 +89,17 @@ export default function CourseDetailPage() {
   };
 
   const handleEnroll = () => {
-    if (!course) return;
-    const updatedCourse = {
-      ...course,
-      isEnrolled: true,
-      modules: generateModules(true)
-    };
-    setCourse(updatedCourse);
+    setCourse(prev => ({ ...prev, isEnrolled: true }));
+    // Unlock first module after enrollment
+    setCourse(prev => ({
+      ...prev,
+      modules: prev.modules.map(module => 
+        module.id === 1 
+          ? { ...module, isLocked: false, lessons: module.lessons.map(lesson => ({ ...lesson, isLocked: false })) }
+          : module
+      )
+    }));
   };
-
-  if (!course) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-      </div>
-    );
-  }
 
   const SidebarItem = ({ icon, label, href, active, className = "" }: {
     icon: JSX.Element;
@@ -401,15 +314,10 @@ export default function CourseDetailPage() {
               {course.isEnrolled || selectedLesson === '1.1' || selectedLesson === '1.2' ? (
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg">
                       <Play size={32} className="text-purple-600 ml-1" />
                     </div>
                     <p className="text-gray-600">Click to start lesson</p>
-                    {course.isEnrolled && (
-                      <div className="mt-2 px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full inline-block">
-                        Enrolled - Full Access
-                      </div>
-                    )}
                   </div>
                 </div>
               ) : (
@@ -417,13 +325,7 @@ export default function CourseDetailPage() {
                   <div className="text-center">
                     <Lock size={48} className="text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-500 text-lg font-medium">Content Locked</p>
-                    <p className="text-gray-400 text-sm mb-4">Enroll in the course to access this lesson</p>
-                    <button
-                      onClick={handleEnroll}
-                      className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all"
-                    >
-                      Enroll Now
-                    </button>
+                    <p className="text-gray-400 text-sm">Enroll in the course to access this lesson</p>
                   </div>
                 </div>
               )}
