@@ -85,7 +85,7 @@ export default function AssignmentsPage() {
             <SidebarItem
               icon={<LogOut size={20} />}
               label="Logout"
-              href="/logout"
+              href="/login"
               className="text-red-600 hover:bg-red-50"
             />
           </div>

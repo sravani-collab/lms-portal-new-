@@ -194,7 +194,7 @@ export default function CoursesPage() {
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                 <GraduationCap size={24} className="text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-800">EduPlatform</span>
+              <span className="text-xl font-bold text-gray-800"></span>
             </div>
           </div>
 
@@ -213,7 +213,7 @@ export default function CoursesPage() {
             <SidebarItem
               icon={<LogOut size={20} />}
               label="Logout"
-              href="/logout"
+              href="/login"
               className="text-red-600 hover:bg-red-50"
             />
           </div>
