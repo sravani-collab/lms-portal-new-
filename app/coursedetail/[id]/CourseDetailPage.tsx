@@ -138,6 +138,7 @@ const generateModules = (isEnrolled: boolean) => [
   }
 ];
 
+
 export default function CourseDetailPage() {
   const [expandedModules, setExpandedModules] = useState<number[]>([1]);
   const [selectedLesson, setSelectedLesson] = useState('1.2');
@@ -392,7 +393,7 @@ export default function CourseDetailPage() {
             {/* Lesson Header */}
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Lesson 1.2 - Basics
+                {onclick} {course.title}-{selectedLesson}
               </h2>
             </div>
 
